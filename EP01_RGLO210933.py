@@ -12,7 +12,7 @@ def limpiar():
     if platform.system() == "Windows":
         os.system("cls")
     else:
-        print("\033c", end="")  # Código ANSI para limpiar la pantalla
+        print("\033c", end="") 
 
 
 def enter():
