@@ -3,16 +3,17 @@ import platform
 import random
 import time
 import math
+import sys
 print("bienvenido usuario de ",platform.system())
 #---------------------------------------------------------funciones de formato
-import os
-import platform
 
 def limpiar():
     if platform.system() == "Windows":
         os.system("cls")
+    elif sys.stdout.isatty():  # Verifica si la salida es una terminal real
+        print("\033c", end="")
     else:
-        print("\033c", end="") 
+        print("\n" * 100)  # Solución alternativa para entornos sin soporte ANSI
 
 
 def enter():
