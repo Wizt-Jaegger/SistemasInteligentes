@@ -2,148 +2,221 @@ import os
 import platform
 import random
 import time
-print("bienvenido usuario de ",platform.system())
-#---------------------------------------------------------funciones de formato
+import math
+
+# Función para limpiar la pantalla
 def limpiar():
-    varClear = "Clear"
+    varClear = "clear"
     if platform.system() == "Windows":
         varClear = "cls"
-    else:
-        varClear = "clear"
     os.system(varClear)
-#------------------------------------------------------------------------------------- definiendo que lleva mi nodo
-class nodo:
-    def __init__(self, valor,np):
-        self.np=np 
-        self.valor = valor
-        self.hijos=[]
+    
+def enter():
+    input("\npresiona ENTER para continuar\n")
+    limpiar()
 
-    def agregarHijo(self, hijo):
-        self.hijos.append(hijo)
-#------------------------------------------------------------------------------------- Declarar nodos que no sean una pared de pacman
-#nota todos tienen nivel de profundidad 1 porque la profundidad dependera de cual es nodo raiz, entonces se debe asignar despues de definir el nodo raiz y meta
+# Clase para definir un nodo
+class NodoPacman:
+    def __init__(self, valor, np):
+        self.np = np  # Nivel de profundidad
+        self.valor = valor  # Coordenadas (fila, columna)
+        self.hijosPacman = []  # Lista de nodos hijos
+        self.g = 0  # Costo acumulado (para A*)
+        self.f = 0  # Función de evaluación (para A*)
 
-nodoA1 = nodo(('A',1),1)
-nodoA2 = nodo(('A',2),1)
-nodoA3 = nodo(('A',3),1)
-nodoA4 = nodo(('A',4),1)
-nodoA6 = nodo(('A',6),1)
-nodoA7 = nodo(('A',7),1)
-nodoA8 = nodo(('A',8),1)
-nodoB1 = nodo(('B',1),1)
-nodoB4 = nodo(('B',4),1)
-nodoB6 = nodo(('B',6),1)
-nodoB8 = nodo(('B',8),1)
-nodoC1 = nodo(('C',1),1)
-nodoC3 = nodo(('C',3),1)
-nodoC4 = nodo(('C',4),1)
-nodoC6 = nodo(('C',6),1)
-nodoC8 = nodo(('C',8),1)
-nodoD1 = nodo(('D',1),1)
-nodoD6 = nodo(('D',6),1)
-nodoD8 = nodo(('D',8),1)
-nodoE1 = nodo(('E',1),1)
-nodoE2 = nodo(('E',2),1)
-nodoE3 = nodo(('E',3),1)
-nodoE4 = nodo(('E',4),1)
-nodoE5 = nodo(('E',5),1)
-nodoE6 = nodo(('E',6),1)
-nodoF1 = nodo(('F',1),1)
-nodoF4 = nodo(('F',4),1)
-nodoF8 = nodo(('F',8),1)
-nodoG1 = nodo(('G',1),1)
-nodoG2 = nodo(('G',2),1)
-nodoG4 = nodo(('G',4),1)
-nodoG5 = nodo(('G',5),1)
-nodoG6 = nodo(('G',6),1)
-nodoG8 = nodo(('G',8),1)
-nodoH5 = nodo(('H',5),1)
-nodoH6 = nodo(('H',6),1)
-nodoH7 = nodo(('H',7),1)
-nodoH8 = nodo(('H',8),1)
+    def agregarHijoPacman(self, hijoPacman):
+        self.hijosPacman.append(hijoPacman)
 
+# Declarar todos los nodos válidos (no paredes)
+nodosPacman = {
+    'A1': NodoPacman(('A', 1), 1),
+    'A2': NodoPacman(('A', 2), 1),
+    'A3': NodoPacman(('A', 3), 1),
+    'A4': NodoPacman(('A', 4), 1),
+    'A6': NodoPacman(('A', 6), 1),
+    'A7': NodoPacman(('A', 7), 1),
+    'A8': NodoPacman(('A', 8), 1),
+    'B1': NodoPacman(('B', 1), 1),
+    'B4': NodoPacman(('B', 4), 1),
+    'B6': NodoPacman(('B', 6), 1),
+    'B8': NodoPacman(('B', 8), 1),
+    'C1': NodoPacman(('C', 1), 1),
+    'C3': NodoPacman(('C', 3), 1),
+    'C4': NodoPacman(('C', 4), 1),
+    'C6': NodoPacman(('C', 6), 1),
+    'C8': NodoPacman(('C', 8), 1),
+    'D1': NodoPacman(('D', 1), 1),
+    'D6': NodoPacman(('D', 6), 1),
+    'D8': NodoPacman(('D', 8), 1),
+    'E1': NodoPacman(('E', 1), 1),
+    'E2': NodoPacman(('E', 2), 1),
+    'E3': NodoPacman(('E', 3), 1),
+    'E4': NodoPacman(('E', 4), 1),
+    'E5': NodoPacman(('E', 5), 1),
+    'E6': NodoPacman(('E', 6), 1),
+    'F1': NodoPacman(('F', 1), 1),
+    'F4': NodoPacman(('F', 4), 1),
+    'F8': NodoPacman(('F', 8), 1),
+    'G1': NodoPacman(('G', 1), 1),
+    'G2': NodoPacman(('G', 2), 1),
+    'G4': NodoPacman(('G', 4), 1),
+    'G5': NodoPacman(('G', 5), 1),
+    'G6': NodoPacman(('G', 6), 1),
+    'G8': NodoPacman(('G', 8), 1),
+    'H5': NodoPacman(('H', 5), 1),
+    'H6': NodoPacman(('H', 6), 1),
+    'H7': NodoPacman(('H', 7), 1),
+    'H8': NodoPacman(('H', 8), 1),
+}
 
-#Ejemplo de calculo de nivel de profundidad
-def calcularNivelesProfundidad(raiz):
-    if raiz is None:
-        return 0
-    else:
-        for hijo in raiz.hijos:
-            hijo.np = raiz.np + 1
-            calcularNivelesProfundidad(hijo)
-        return 1 + max(calcularNivelesProfundidad(hijo) for hijo in raiz.hijos) if raiz.hijos else 0
+# Función para obtener un nodo por su valor (coordenadas)
+def obtenerNodoPacman(valor):
+    clave = f"{valor[0]}{valor[1]}"
+    return nodosPacman.get(clave, None)
 
-#------------------------------------------------------------------------------------- Validar si son nodos pared
+# Función para construir el arbol/grafo pacman
+def construirArbol(raizPacman, metaPacman):
+    movimientos = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Arriba, abajo, izquierda, derecha
+    filaLetra, columna = raizPacman.valor
+    filaNum = ord(filaLetra) - ord('A') + 1  # Convertir fila (letra) a numero
+    for movimiento in movimientos:
+        nuevaFilaNum = filaNum + movimiento[0]
+        nuevaColumna = columna + movimiento[1]
+        if 1 <= nuevaFilaNum <= 8 and 1 <= nuevaColumna <= 8:
+            nuevaFilaLetra = chr(ord('A') + nuevaFilaNum - 1)  # Convertir numero a letra
+            nuevoNodoPacman = obtenerNodoPacman((nuevaFilaLetra, nuevaColumna))
+            if nuevoNodoPacman and nuevoNodoPacman not in raizPacman.hijosPacman:
+                raizPacman.agregarHijoPacman(nuevoNodoPacman)
+                construirArbol(nuevoNodoPacman, metaPacman)
 
-def validarPared(numero, letra):
-    paredes = [(2, 'B'), (3, 'B'), (2, 'C'), (2, 'D'), (3, 'D'), (4, 'D'), (5, 'D'), (5, 'C'), (5, 'B'), (5, 'A'), (2, 'F'), (3, 'F'), (3, 'G'), (1, 'H'), (2, 'H'), (3, 'H'), (4, 'H'), (7, 'B'), (7, 'C'), (7, 'D'), (7, 'E'), (8, 'E'), (5, 'F'), (6, 'F'), (7, 'F'), (7, 'G')]
-    return (numero, letra) not in paredes    
-#------------------------------------------------------------------------------------- Generacion dinamica de pacman y fantasma
-#--------- Generar fantasma
-def generarNodoRaiz():
-    while True:
-        numRaiz = random.randint(1, 8)
-        letraRaiz = random.choice(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-        if validarPared(numRaiz, letraRaiz):
-            nodoMeta = generarNodoMeta()
-            if (numRaiz, letraRaiz) != nodoMeta.valor:
-                raiz = nodo((numRaiz, letraRaiz), 1)
-                construirArbol(raiz, nodoMeta)
-                calcularNivelesProfundidad(raiz)
-                return raiz, nodoMeta
-#-----------Generar el pacman
-def generarNodoMeta():
-    while True:
-        numMeta = random.randint(1, 8)
-        letraMeta = random.choice(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
-        if validarPared(numMeta, letraMeta):
-            return nodo((numMeta, letraMeta), 1)
-        
+# Funcion heuristica (distancia Manhattan, distancia euclidiana)
+def heuristicaManhattan(nodoPacman, metaPacman):
+    filaNodoPacman = ord(nodoPacman.valor[0]) - ord('A') + 1
+    columnaNodoPacman = nodoPacman.valor[1]
+    filaMetaPacman = ord(metaPacman.valor[0]) - ord('A') + 1
+    columnaMetaPacman = metaPacman.valor[1]
+    return abs(filaNodoPacman - filaMetaPacman) + abs(columnaNodoPacman - columnaMetaPacman)
 
-def construirArbol(raiz, meta):
-    # Aquí se debe implementar la lógica para construir el árbol
-    #no estoy seguro porque depende de la generacion de raiz y meta
-    pass
-#-----------------------------------------------------------------------Impresion
-def imprimirLaberinto(raiz, meta):
+def heuristicaEuclidiana(nodoPacman, metaPacman):
+    filaNodoPacman = ord(nodoPacman.valor[0]) - ord('A') + 1
+    columnaNodoPacman = nodoPacman.valor[1]
+    filaMetaPacman = ord(metaPacman.valor[0]) - ord('A') + 1
+    columnaMetaPacman = metaPacman.valor[1]
+    return math.sqrt((filaNodoPacman - filaMetaPacman)**2 + (columnaNodoPacman - columnaMetaPacman)**2)
+
+def imprimirLaberinto(raizPacman, metaPacman, camino=None):
     laberinto = [['.' for _ in range(8)] for _ in range(8)]
     for i in range(8):
         for j in range(8):
-            if not validarPared(i+1, chr(ord('A')+j)):
-                laberinto[i][j] = 'X'
-    x, y = raiz.valor
-    laberinto[x-1][ord(y)-ord('A')] = 'Ϯ'
-    x, y = meta.valor
-    laberinto[x-1][ord(y)-ord('A')] = 'Ỽ'
+            if not obtenerNodoPacman((chr(ord('A') + i), j + 1)):
+                laberinto[i][j] = 'X'  # Paredes
+    x, y = raizPacman.valor
+    laberinto[ord(x) - ord('A')][y - 1] = 'Ỽ'  # Fantasma
+    x, y = metaPacman.valor
+    laberinto[ord(x) - ord('A')][y - 1] = 'Ϯ'  # Pac-Man
+
+    if camino:
+        for paso in camino:
+            x, y = paso
+            laberinto[ord(x) - ord('A')][y - 1] = '*'  # Marcar el camino
+
     for fila in laberinto:
         print(' '.join(fila))
     print()
-    #para testing, hill climbing sera reemplazado por profundidad
 
-def hillclimbing(raiz, meta):
-    print("Busqueda en profundidad izquierda simulando hill")
-    agenda = []
-    agenda.append(raiz)
-    nodoMeta = meta
+def hillClimbing(raizPacman, metaPacman):
+    print("Búsqueda con Hill Climbing mejorada")
+    actual = raizPacman
+    visitados = set()
+    camino = [actual.valor]  # Lista para almacenar el camino recorrido
     
-    while len(agenda) > 0:
-        nodoVisitado = agenda.pop()
-        valor = nodoVisitado.valor
-        print("Nodo visitado:")
-        #limpiar()
-        imprimirLaberinto(raiz, meta)
-        time.sleep(1)
-        if nodoVisitado.valor == nodoMeta:
-            break
-        else:
-            for hijo in reversed(nodoVisitado.hijos):
-                agenda.append(hijo)
-
-def menu():
-    raiz, meta = generarNodoRaiz()
     while True:
-        opt= input("\nDeseas jugar pacman?\n\t1= Si\n\t0=No")
-        if opt == 1:
-            hillclimbing()
-        else:
+        if actual.valor == metaPacman.valor:
+            print("¡Fantasma ha sido desvivido!")
+            imprimirLaberinto(raizPacman, metaPacman, camino)
             break
+            
+        visitados.add(actual.valor)
+        
+        opciones = [(hijoPacman, heuristicaManhattan(hijoPacman, metaPacman)) 
+                   for hijoPacman in actual.hijosPacman 
+                   if hijoPacman.valor not in visitados]
+        
+        if not opciones:
+            print("No hay más nodos para explorar.")
+            imprimirLaberinto(raizPacman, metaPacman, camino)
+            break
+            
+        opciones.sort(key=lambda x: x[1])
+        opcion, _ = opciones[0]
+        actual = opcion
+        camino.append(actual.valor)  # Agregar el nodo actual al camino
+        
+        print("Nodo actual:", actual.valor)
+        limpiar()
+        imprimirLaberinto(actual, metaPacman)
+        time.sleep(1)
+
+def aEstrella(raizPacman, metaPacman):
+    print("Búsqueda con A*")
+    abiertos = []
+    cerrados = set()
+    raizPacman.g = 0
+    raizPacman.f = heuristicaEuclidiana(raizPacman, metaPacman)
+    abiertos.append(raizPacman)
+    camino = []  # Lista para almacenar el camino recorrido
+
+    while abiertos:
+        actual = min(abiertos, key=lambda x: x.f)
+        abiertos.remove(actual)
+        cerrados.add(actual.valor)
+        camino.append(actual.valor)  # Agregar el nodo actual al camino
+
+        print("Nodo actual:", actual.valor)
+        limpiar()
+        imprimirLaberinto(actual, metaPacman)
+        time.sleep(1)
+
+        if actual.valor == metaPacman.valor:
+            print("¡Fantasma comido!")
+            imprimirLaberinto(raizPacman, metaPacman, camino)
+            break
+
+        for hijoPacman in actual.hijosPacman:
+            if hijoPacman.valor in cerrados:
+                continue
+
+            g_tentativo = actual.g + 1
+            if hijoPacman not in abiertos or g_tentativo < hijoPacman.g:
+                hijoPacman.g = g_tentativo
+                hijoPacman.f = hijoPacman.g + heuristicaEuclidiana(hijoPacman, metaPacman)
+                if hijoPacman not in abiertos:
+                    abiertos.append(hijoPacman)
+
+# Menú principal pacman
+def menuPacman():
+    while True:
+        time.sleep(2)
+        limpiar()
+        enter()
+        opt = input("\n¿Deseas jugar Pac-Man?\n\t1 = Hill Climbing\n\t2 = A*\n\t0 = Salir\n")
+        if opt == '1' or opt == '2':
+            raizPacman = random.choice(list(nodosPacman.values()))
+            metaPacman = random.choice(list(nodosPacman.values()))
+            while metaPacman.valor == raizPacman.valor:
+                metaPacman = random.choice(list(nodosPacman.values()))
+            construirArbol(raizPacman, metaPacman)
+            if opt == '1':
+                hillClimbing(raizPacman, metaPacman)
+            else:
+                aEstrella(raizPacman, metaPacman)
+        elif opt == '0':
+            limpiar()
+            print("¡Gracias por jugar!")
+            time.sleep(2)
+            limpiar()
+            break
+        else:
+            print("Opción no válida. Intenta de nuevo.")
+
+menuPacman()
