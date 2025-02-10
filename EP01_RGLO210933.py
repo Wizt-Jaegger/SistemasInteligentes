@@ -5,13 +5,15 @@ import time
 import math
 print("bienvenido usuario de ",platform.system())
 #---------------------------------------------------------funciones de formato
+import os
+import platform
+
 def limpiar():
-    varClear = "Clear"
     if platform.system() == "Windows":
-        varClear = "cls"
+        os.system("cls")
     else:
-        varClear = "clear"
-    os.system(varClear)
+        print("\033c", end="")  # Código ANSI para limpiar la pantalla
+
 
 def enter():
     input("\npresiona ENTER para continuar\n")
