@@ -10,10 +10,10 @@ print("bienvenido usuario de ",platform.system())
 def limpiar():
     if platform.system() == "Windows":
         os.system("cls")
-    elif sys.stdout.isatty():  # Verifica si la salida es una terminal real
+    elif sys.stdout.isatty(): #esta wea es pa ver si si es un linux linux
         print("\033c", end="")
     else:
-        print("\n" * 100)  # Solución alternativa para entornos sin soporte ANSI
+        print("\n" * 5) #peor es nada
 
 
 def enter():
@@ -82,7 +82,8 @@ def calcularNivelesProfundidad(raiz):
             hijo.np = raiz.np + 1 
             calcularNivelesProfundidad(hijo)
         return 1 + max(calcularNivelesProfundidad(hijo) for hijo in raiz.hijos) if raiz.hijos else 0
-#------------------------------------------------------------busquedas ciegas
+    
+#---------------------------------------------------------------------------------------------------------busquedas ciegas
 
 def busquedaProfundidadIzquierda(raiz, nodoMeta):
     print("Busqueda en profundidad izquierda")
@@ -194,7 +195,7 @@ def busquedaProfundidadIterada(raiz, num, nodoMeta):
         if num == 2:
             flag = busquedaProfundidadLimitadaDerecha(raiz, lim, nodoMeta)
         lim = lim + 1
-#------------------------------------------------------------menus
+#------------------------------------------------------------------------------------------------------------------menus
 def menuCiega():
     while True:
         enter()
@@ -265,14 +266,14 @@ def menuCiega():
         except ValueError:
             print("\nError: Ingrese un número válido.")
 
-# Clase para definir un nodo
+
 class NodoPacman:
     def __init__(self, valor, np):
-        self.np = np  # Nivel de profundidad
-        self.valor = valor  # Coordenadas (fila, columna)
-        self.hijosPacman = []  # Lista de nodos hijos
-        self.g = 0  # Costo acumulado (para A*)
-        self.f = 0  # Función de evaluación (para A*)
+        self.np = np 
+        self.valor = valor  
+        self.hijosPacman = []  
+        self.g = 0  # Costo acumulado A*
+        self.f = 0  # Funcion de evaluacion A*
 
     def agregarHijoPacman(self, hijoPacman):
         self.hijosPacman.append(hijoPacman)
@@ -328,18 +329,18 @@ def obtenerNodoPacman(valor):
 def construirArbol(raizPacman, metaPacman):
     movimientos = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Arriba, abajo, izquierda, derecha
     filaLetra, columna = raizPacman.valor
-    filaNum = ord(filaLetra) - ord('A') + 1  # Convertir fila (letra) a numero
+    filaNum = ord(filaLetra) - ord('A') + 1  # conversion letra  a num
     for movimiento in movimientos:
         nuevaFilaNum = filaNum + movimiento[0]
         nuevaColumna = columna + movimiento[1]
         if 1 <= nuevaFilaNum <= 8 and 1 <= nuevaColumna <= 8:
-            nuevaFilaLetra = chr(ord('A') + nuevaFilaNum - 1)  # Convertir numero a letra
+            nuevaFilaLetra = chr(ord('A') + nuevaFilaNum - 1)  # Convertir num a letra
             nuevoNodoPacman = obtenerNodoPacman((nuevaFilaLetra, nuevaColumna))
             if nuevoNodoPacman and nuevoNodoPacman not in raizPacman.hijosPacman:
                 raizPacman.agregarHijoPacman(nuevoNodoPacman)
                 construirArbol(nuevoNodoPacman, metaPacman)
 
-# Funcion heuristica (distancia Manhattan, distancia euclidiana)
+# ---------------------------------------------------------------------------Funciones heuristica Manhattan, Euclidiana
 def heuristicaManhattan(nodoPacman, metaPacman):
     filaNodoPacman = ord(nodoPacman.valor[0]) - ord('A') + 1
     columnaNodoPacman = nodoPacman.valor[1]
@@ -353,7 +354,7 @@ def heuristicaEuclidiana(nodoPacman, metaPacman):
     filaMetaPacman = ord(metaPacman.valor[0]) - ord('A') + 1
     columnaMetaPacman = metaPacman.valor[1]
     return math.sqrt((filaNodoPacman - filaMetaPacman)**2 + (columnaNodoPacman - columnaMetaPacman)**2)
-
+#---------------------------------------------------------------------------------------
 def imprimirLaberinto(raizPacman, metaPacman, camino=None):
     laberinto = [['.' for _ in range(8)] for _ in range(8)]
     for i in range(8):
@@ -361,9 +362,9 @@ def imprimirLaberinto(raizPacman, metaPacman, camino=None):
             if not obtenerNodoPacman((chr(ord('A') + i), j + 1)):
                 laberinto[i][j] = 'X'  # Paredes
     x, y = raizPacman.valor
-    laberinto[ord(x) - ord('A')][y - 1] = 'Ỽ'  # Fantasma
+    laberinto[ord(x) - ord('A')][y - 1] = 'Ỽ'  # Fantasma ahora es pacman
     x, y = metaPacman.valor
-    laberinto[ord(x) - ord('A')][y - 1] = 'Ϯ'  # Pac-Man
+    laberinto[ord(x) - ord('A')][y - 1] = 'Ϯ'  # Pac-Man ahora es fantasma
 
     if camino:
         for paso in camino:
@@ -378,7 +379,7 @@ def hillClimbing(raizPacman, metaPacman):
     print("Búsqueda con Hill Climbing mejorada")
     actual = raizPacman
     visitados = set()
-    camino = [actual.valor]  # Lista para almacenar el camino recorrido
+    camino = [actual.valor] 
     
     while True:
         if actual.valor == metaPacman.valor:
@@ -400,7 +401,7 @@ def hillClimbing(raizPacman, metaPacman):
         opciones.sort(key=lambda x: x[1])
         opcion, _ = opciones[0]
         actual = opcion
-        camino.append(actual.valor)  # Agregar el nodo actual al camino
+        camino.append(actual.valor)  
         
         print("Nodo actual:", actual.valor)
         limpiar()
@@ -414,13 +415,12 @@ def aEstrella(raizPacman, metaPacman):
     raizPacman.g = 0
     raizPacman.f = heuristicaEuclidiana(raizPacman, metaPacman)
     abiertos.append(raizPacman)
-    camino = []  # Lista para almacenar el camino recorrido
-
+    camino = []  
     while abiertos:
         actual = min(abiertos, key=lambda x: x.f)
         abiertos.remove(actual)
         cerrados.add(actual.valor)
-        camino.append(actual.valor)  # Agregar el nodo actual al camino
+        camino.append(actual.valor)
 
         print("Nodo actual:", actual.valor)
         limpiar()
@@ -446,17 +446,17 @@ def aEstrella(raizPacman, metaPacman):
 #---------------------------------------------------------------------------------------------------------------------Reinas
 class NodoReinas:
     def __init__(self, estado, nivelProfundidad, costoAcumulado, heuristica):
-        self.estado = estado  # Estado actual del tablero
-        self.nivelProfundidad = nivelProfundidad  # Nivel de profundidad
-        self.costoAcumulado = costoAcumulado  # Costo acumulado (g(n))
-        self.heuristica = heuristica  # Heurística (h(n))
-        self.f = costoAcumulado + heuristica  # Función de evaluación (f(n) = g(n) + h(n))
+        self.estado = estado  
+        self.nivelProfundidad = nivelProfundidad  
+        self.costoAcumulado = costoAcumulado 
+        self.heuristica = heuristica 
+        self.f = costoAcumulado + heuristica #funcion de evaluacion
 
 def generarEstadoInicialReinas():
     """Genera un estado inicial con todas las reinas en la misma fila aleatoria."""
     filaInicial = random.randint(0, 3)
     return tuple((filaInicial, i) for i in range(4))
-
+#--------------------------------------------------------------------------------------------------Heuristicas
 def calcularHeuristicaReinas(estado):
     """Calcula la heurística como el número de reinas mal colocadas."""
     contador = 0
@@ -491,17 +491,17 @@ def aEstrellaReinas():
     estadoInicial = generarEstadoInicialReinas()
     heuristicaInicial = calcularHeuristicaReinas(estadoInicial)
     nodoInicial = NodoReinas(estadoInicial, 0, 0, heuristicaInicial)
-    agenda = [nodoInicial]  # Usamos una lista como agenda
+    agenda = [nodoInicial]  
     visitados = set()
-    solucionesExploradas = []  # Para almacenar las soluciones exploradas
+    solucionesExploradas = [] 
 
     while agenda:
-        # Ordenar la agenda por f(n) (costo + heurística)
+        
         agenda.sort(key=lambda x: x.f)
-        nodoActual = agenda.pop(0)  # Seleccionar el nodo con menor f(n)
-        solucionesExploradas.append((nodoActual.estado, nodoActual.f))  # Registrar solución explorada
+        nodoActual = agenda.pop(0)  
+        solucionesExploradas.append((nodoActual.estado, nodoActual.f))  
 
-        if nodoActual.heuristica == 0:  # Si todas las reinas están bien colocadas
+        if nodoActual.heuristica == 0:  
             print("Soluciones exploradas con su costo asociado (f(n)):")
             for idx, (estado, costo) in enumerate(solucionesExploradas):
                 print(f"Solución {idx + 1}:")
