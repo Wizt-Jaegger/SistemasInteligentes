@@ -1,5 +1,7 @@
 #Modelo de red neuronal simple de McCulloch-Pitts
 #Compuerta OR
+#entrenar el perceptrón para los patrones de entrada correspondientes a las tres compuertas lógicas: AND, OR y NOT.
+
 from random import randint
 
 def generarPrimerosPesos():
@@ -25,7 +27,7 @@ def perceptron (patrones, W, umbral):
                 bandera=1
                 #ajustamos peso y umbral
                 W[0] = W[0] + ((patrones[i][2]-y)*patrones[i][0])
-                W[1] =W[1] + ((patrones[i][2]-y)*patrones[i][1])
+                W[1] = W[1] + ((patrones[i][2]-y)*patrones[i][1])
                 umbral = umbral + (patrones[i][2]-y)
                 print(W,umbral)
             iteraciones += 1
