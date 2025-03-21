@@ -5,7 +5,7 @@ POBLACION_TAM = 10
 RANGO_MIN = -5
 RANGO_MAX = 5
 PROB_MUTA = 0.025
-GENERACIONES_MAX = 30
+GENERACIONES_MAX = 300
 
 
 def calcular_errores(x, y, z, u):
