@@ -4,7 +4,7 @@
 
 float tasaAprendizaje = 0.1;
 
-// Función de activación
+// Función de activacion
 int funcionActivacion(int suma) {
     return (suma > 0) ? 1 : 0;
 }

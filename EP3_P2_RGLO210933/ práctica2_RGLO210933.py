@@ -1,0 +1,21 @@
+#Filtros de Suavizado Emi
+#Blur, Gaussian, Median
+import cv2
+img = cv2.imread('ruidoPimienta.png')
+cv2.imshow('Imagen original', img)
+blur = cv2.blur(img, (4, 4))
+Gaussian = cv2.GaussianBlur(img, (5, 5), 0)
+median = cv2.medianBlur(img, 5)
+cv2.imshow('Imagen con blur', blur)
+cv2.imshow('Imagen con Gaussian', Gaussian)
+cv2.imshow('Imagen con median', median)
+edges1 = cv2.Canny(blur, 100, 200)
+edges2 = cv2.Canny(Gaussian, 100, 200)
+edges3 = cv2.Canny(median, 100, 200)
+edges = cv2.Canny(img, 100, 200)
+cv2.imshow('Imagen original con Canny', edges)
+cv2.imshow('Imagen blur con Canny', edges1)
+cv2.imshow('Imagen Gaussian con Canny', edges2)  
+cv2.imshow('Imagen median con Canny', edges3)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
